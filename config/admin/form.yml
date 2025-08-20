@@ -11,7 +11,7 @@ services:
 
   cdigruttola.module.electronicinvoicefields.core.form.identifiable_object.builder.address_customer_type_form_builder:
     class: 'PrestaShop\PrestaShop\Core\Form\IdentifiableObject\Builder\FormBuilder'
-    factory: 'prestashop.core.form.builder.form_builder_factory:create'
+    factory: [ '@prestashop.core.form.builder.form_builder_factory', 'create' ]
     arguments:
       - 'cdigruttola\Module\Electronicinvoicefields\Form\Admin\AddressCustomerTypeType'
       - '@cdigruttola.module.electronicinvoicefields.core.form.identifiable_object.data_provider.address_customer_type_form_data_provider'
@@ -23,7 +23,7 @@ services:
 
   cdigruttola.module.electronicinvoicefields.core.form.identifiable_object.handler.address_customer_type_form_handler:
     class: 'PrestaShop\PrestaShop\Core\Form\IdentifiableObject\Handler\FormHandler'
-    factory: 'prestashop.core.form.identifiable_object.handler.form_handler_factory:create'
+    factory: [ '@prestashop.core.form.identifiable_object.handler.form_handler_factory', 'create' ]
     arguments:
       - '@cdigruttola.module.electronicinvoicefields.core.form.identifiable_object.data_handler.address_customer_type_form_data_handler'
 

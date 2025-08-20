@@ -39,13 +39,12 @@ class Electronicinvoicefields extends Module
     public const EINVOICE_DNI_VALIDATE_MIOCODICEFISCALE_API = 'EINVOICE_DNI_VALIDATE_MIOCODICEFISCALE_API';
     public const EINVOICE_CHECK_USER_AGE = 'EINVOICE_CHECK_USER_AGE';
     public const EINVOICE_MINIMUM_USER_AGE = 'EINVOICE_MINIMUM_USER_AGE';
-    protected $config_form = false;
 
     public function __construct()
     {
         $this->name = 'electronicinvoicefields';
         $this->tab = 'administration';
-        $this->version = '2.3.10';
+        $this->version = '3.0.0';
         $this->author = 'cdigruttola';
         $this->need_instance = 0;
 
@@ -78,7 +77,7 @@ class Electronicinvoicefields extends Module
 
         $this->confirmUninstall = $this->trans('Are you sure you want to uninstall?', [], 'Modules.Electronicinvoicefields.Einvoice');
 
-        $this->ps_versions_compliancy = ['min' => '1.7.7', 'max' => _PS_VERSION_];
+        $this->ps_versions_compliancy = ['min' => '9.0.0', 'max' => _PS_VERSION_];
     }
 
     public function isUsingNewTranslationSystem(): bool
@@ -92,10 +91,8 @@ class Electronicinvoicefields extends Module
      */
     public function install($reset = false): bool
     {
-        if (!$reset) {
-            $this->_clearCache('*');
-            include dirname(__FILE__) . '/sql/install.php';
-        }
+        $this->_clearCache('*');
+        include dirname(__FILE__) . '/sql/install.php';
 
         return parent::install()
             && $this->registerHooks()
@@ -127,32 +124,19 @@ class Electronicinvoicefields extends Module
         return true;
     }
 
-    public function uninstall($reset = false): bool
+    public function uninstall(): bool
     {
-        if (!$reset) {
-            include dirname(__FILE__) . '/sql/uninstall.php';
+        include dirname(__FILE__) . '/sql/uninstall.php';
 
-            Configuration::deleteByName(self::EINVOICE_PEC_REQUIRED);
-            Configuration::deleteByName(self::EINVOICE_SDI_REQUIRED);
-            Configuration::deleteByName(self::EINVOICE_VAT_VIES_VALIDATE);
-            Configuration::deleteByName(self::EINVOICE_DNI_VALIDATE);
-            Configuration::deleteByName(self::EINVOICE_DNI_VALIDATE_MIOCODICEFISCALE_API);
-            Configuration::deleteByName(self::EINVOICE_CHECK_USER_AGE);
-            Configuration::deleteByName(self::EINVOICE_MINIMUM_USER_AGE);
+        Configuration::deleteByName(self::EINVOICE_PEC_REQUIRED);
+        Configuration::deleteByName(self::EINVOICE_SDI_REQUIRED);
+        Configuration::deleteByName(self::EINVOICE_VAT_VIES_VALIDATE);
+        Configuration::deleteByName(self::EINVOICE_DNI_VALIDATE);
+        Configuration::deleteByName(self::EINVOICE_DNI_VALIDATE_MIOCODICEFISCALE_API);
+        Configuration::deleteByName(self::EINVOICE_CHECK_USER_AGE);
+        Configuration::deleteByName(self::EINVOICE_MINIMUM_USER_AGE);
 
-            return parent::uninstall();
-        }
-
-        return true;
-    }
-
-    public function onclickOption($opt, $href)
-    {
-        if ($opt === 'reset') {
-            return $this->uninstall(true) && $this->install(true);
-        }
-
-        return true;
+        return parent::uninstall();
     }
 
     /**
@@ -428,6 +412,8 @@ class Electronicinvoicefields extends Module
         if ($params['object']->getOrder()->addressNeedInvoice()) {
             return $this->trans('Courtesy page, you\'ll receive the credit slip in XML format via the revenue agency exchange system.', [], 'Modules.Electronicinvoicefields.Einvoice');
         }
+
+        return '';
     }
 
     /**
@@ -630,7 +616,7 @@ class Electronicinvoicefields extends Module
     public function hookActionSubmitCustomerAddressForm($params)
     {
         if (!isset($params['address'])) {
-            return false;
+            return;
         }
         if (!isset($params['object'])) {
             $params['object'] = $params['address'];
