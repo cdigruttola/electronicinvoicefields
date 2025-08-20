@@ -35,6 +35,7 @@ use cdigruttola\Module\Electronicinvoicefields\Core\Domain\AddressCustomerType\E
 use cdigruttola\Module\Electronicinvoicefields\Core\Domain\AddressCustomerType\Query\GetAddressCustomerTypeForEditing;
 use cdigruttola\Module\Electronicinvoicefields\Core\Search\Filters\AddressCustomerTypeFilters;
 use PrestaShopBundle\Controller\Admin\FrameworkBundleAdminController;
+use PrestaShopBundle\Controller\Admin\PrestaShopAdminController;
 use PrestaShopBundle\Security\Annotation\AdminSecurity;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -44,7 +45,7 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-class AdminAddressCustomerTypeController extends FrameworkBundleAdminController
+class AdminAddressCustomerTypeController extends PrestaShopAdminController
 {
     const INDEX_ROUTE = 'admin_address_customer_type';
 
@@ -64,7 +65,7 @@ class AdminAddressCustomerTypeController extends FrameworkBundleAdminController
 
         return $this->render('@Modules/electronicinvoicefields/views/templates/admin/index.html.twig', [
             'addressCustomerTypeGrid' => $this->presentGrid($addressCustomerTypeGrid),
-            'help_link' => $this->generateSidebarLink($legacyController),
+            'help_link' => false,
         ]);
     }
 
@@ -96,7 +97,7 @@ class AdminAddressCustomerTypeController extends FrameworkBundleAdminController
 
         return $this->render('@Modules/electronicinvoicefields/views/templates/admin/create.html.twig', [
             'addressCustomerTypeForm' => $addressCustomerTypeForm->createView(),
-            'help_link' => $this->generateSidebarLink($request->attributes->get('_legacy_controller')),
+            'help_link' => false,
             'contextLangId' => $this->getContextLangId(),
             'templatesPreviewUrl' => _MAIL_DIR_,
             'languages' => array_map(
@@ -140,7 +141,7 @@ class AdminAddressCustomerTypeController extends FrameworkBundleAdminController
 
         return $this->render('@Modules/electronicinvoicefields/views/templates/admin/edit.html.twig', [
             'addressCustomerTypeForm' => $addressCustomerTypeForm->createView(),
-            'help_link' => $this->generateSidebarLink($request->attributes->get('_legacy_controller')),
+            'help_link' => false,
             'editableAddressCustomerType' => $this->getQueryBus()->handle(new GetAddressCustomerTypeForEditing((int) $addressCustomerTypeId)),
             'contextLangId' => $this->getContextLangId(),
         ]);

@@ -1,3 +1,15 @@
+admin_electronic_invoice_configuration:
+  path: /einvoice/configuration
+  methods: [GET]
+  defaults:
+    _controller: 'cdigruttola\Module\Electronicinvoicefields\Controller\Admin\AdminElectronicInvoiceController::indexConfiguration'
+
+admin_electronic_invoice_configuration_save:
+  path: /einvoice/configuration
+  methods: [POST, PATCH]
+  defaults:
+    _controller: 'cdigruttola\Module\Electronicinvoicefields\Controller\Admin\AdminElectronicInvoiceController::saveConfiguration'
+
 admin_address_customer_type:
   path: /address-customer-type
   methods: [ GET ]

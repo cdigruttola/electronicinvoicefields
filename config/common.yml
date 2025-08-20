@@ -1,3 +1,10 @@
 services:
   _defaults:
     public: true
+
+  cdigruttola.module.electronicinvoicefields.module:
+    class: Electronicinvoicefields
+    factory: [ 'Module', 'getInstanceByName' ]
+    public: false
+    arguments:
+      - 'electronicinvoicefields'

@@ -31,3 +31,31 @@ services:
     class: 'cdigruttola\Module\Electronicinvoicefields\Form\DataHandler\AddressCustomerTypeFormDataHandler'
     arguments:
       - '@prestashop.core.command_bus'
+
+  cdigruttola.module.electronicinvoicefields.form.configuration_type:
+    class: 'cdigruttola\Module\Electronicinvoicefields\Form\Admin\ConfigurationType'
+    parent: 'form.type.translatable.aware'
+    public: true
+    tags:
+      - { name: form.type }
+
+  cdigruttola.module.electronicinvoicefields.configuration.form_handler:
+    class: 'PrestaShop\PrestaShop\Core\Form\Handler'
+    arguments:
+      - '@form.factory'
+      - '@prestashop.core.hook.dispatcher'
+      - '@cdigruttola.module.electronicinvoicefields.configuration.form_provider'
+      - 'cdigruttola\Module\Electronicinvoicefields\Form\Admin\ConfigurationType'
+      - 'EInvoiceConfigurationForm'
+
+  cdigruttola.module.electronicinvoicefields.configuration.form_provider:
+    class: cdigruttola\Module\Electronicinvoicefields\Form\DataProvider\ConfigurationFormDataProvider
+    arguments:
+      - '@cdigruttola.module.electronicinvoicefields.configuration'
+
+  cdigruttola.module.electronicinvoicefields.configuration:
+    class: cdigruttola\Module\Electronicinvoicefields\Form\DataConfiguration\ConfigurationDataConfiguration
+    arguments:
+      - '@prestashop.adapter.legacy.configuration'
+      - '@prestashop.adapter.shop.context'
+      - '@prestashop.adapter.multistore_feature'

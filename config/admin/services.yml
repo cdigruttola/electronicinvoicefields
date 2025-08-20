@@ -1,10 +1,23 @@
 imports:
+  - { resource: ../common.yml }
   - { resource: form.yml }
   - { resource: handler.yml }
 
 services:
   _defaults:
     public: true
+
+  cdigruttola\Module\Electronicinvoicefields\Controller\Admin\AdminElectronicInvoiceController:
+    class: cdigruttola\Module\Electronicinvoicefields\Controller\Admin\AdminElectronicInvoiceController
+    autowire: true
+    autoconfigure: true
+    arguments:
+      - '@cdigruttola.module.electronicinvoicefields.module'
+
+  cdigruttola\Module\Electronicinvoicefields\Controller\Admin\AdminAddressCustomerTypeController:
+    class: cdigruttola\Module\Electronicinvoicefields\Controller\Admin\AdminAddressCustomerTypeController
+    autowire: true
+    autoconfigure: true
 
   cdigruttola.module.electronicinvoicefields.core.grid.factory.address_customer_type:
     class: 'PrestaShop\PrestaShop\Core\Grid\GridFactory'
