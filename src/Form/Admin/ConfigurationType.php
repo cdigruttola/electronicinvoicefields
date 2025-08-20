@@ -49,42 +49,43 @@ class ConfigurationType extends TranslatorAwareType
     {
         $builder
             ->add('pec_required', SwitchType::class, [
-                'required' => true,
+                'required' => false,
                 'label' => $this->trans('PEC field required', 'Modules.Electronicinvoicefields.Einvoice'),
                 'help' => $this->trans('This options set the PEC field mandatory only for Italian customer.', 'Modules.Electronicinvoicefields.Einvoice'),
                 'multistore_configuration_key' => ConfigurationDataConfiguration::EINVOICE_PEC_REQUIRED,
             ])
             ->add('sdi_required', SwitchType::class, [
-                'required' => true,
+                'required' => false,
                 'label' => $this->trans('SDI field required', 'Modules.Electronicinvoicefields.Einvoice'),
                 'help' => $this->trans('This options set the SDI field mandatory only for Italian customer.', 'Modules.Electronicinvoicefields.Einvoice'),
                 'multistore_configuration_key' => ConfigurationDataConfiguration::EINVOICE_SDI_REQUIRED,
             ])
             ->add('vat_vies_validate', SwitchType::class, [
-                'required' => true,
+                'required' => false,
                 'label' => $this->trans('VAT Code validation with VIES', 'Modules.Electronicinvoicefields.Einvoice'),
                 'help' => $this->trans('This options set enable the VAT Code validation with VIES.', 'Modules.Electronicinvoicefields.Einvoice'),
                 'multistore_configuration_key' => ConfigurationDataConfiguration::EINVOICE_VAT_VIES_VALIDATE,
             ])
             ->add('dni_validate', SwitchType::class, [
-                'required' => true,
+                'required' => false,
                 'label' => $this->trans('DNI field validation', 'Modules.Electronicinvoicefields.Einvoice'),
                 'help' => $this->trans('This options set enable the DNI validation only for Italian customer.', 'Modules.Electronicinvoicefields.Einvoice'),
                 'multistore_configuration_key' => ConfigurationDataConfiguration::EINVOICE_DNI_VALIDATE,
             ])
             ->add('api_token_miocodicefiscale', TextType::class, [
-                'required' => true,
+                'required' => false,
                 'label' => $this->trans('Mio Codice Fiscale API Token', 'Modules.Electronicinvoicefields.Einvoice'),
                 'help' => $this->trans('Use https://www.miocodicefiscale.com/it/api-rest-verifica-e-calcolo-codice-fiscale API to validate DNI.', 'Modules.Electronicinvoicefields.Einvoice'),
                 'multistore_configuration_key' => ConfigurationDataConfiguration::EINVOICE_DNI_VALIDATE_MIOCODICEFISCALE_API,
             ])
             ->add('check_user_age', SwitchType::class, [
-                'required' => true,
+                'required' => false,
                 'label' => $this->trans('Check user age', 'Modules.Electronicinvoicefields.Einvoice'),
                 'help' => $this->trans('This options set enable the check of user age during registration.', 'Modules.Electronicinvoicefields.Einvoice'),
                 'multistore_configuration_key' => ConfigurationDataConfiguration::EINVOICE_CHECK_USER_AGE,
             ])
             ->add('minumum_age', NumberType::class, [
+                'required' => false,
                 'label' => $this->trans('Minimum age for user', 'Modules.Electronicinvoicefields.Einvoice'),
                 'help' => $this->trans('Minimum age for customer, if not set default is 16', 'Modules.Electronicinvoicefields.Einvoice'),
                 'multistore_configuration_key' => ConfigurationDataConfiguration::EINVOICE_MINIMUM_USER_AGE,
