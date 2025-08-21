@@ -8,3 +8,17 @@ services:
     public: false
     arguments:
       - 'electronicinvoicefields'
+
+  cdigruttola.module.electronicinvoicefields.repository.einvoice_customer_type:
+    class: cdigruttola\Module\Electronicinvoicefields\Repository\EinvoiceCustomerTypeRepository
+    public: true
+    factory: ['@doctrine.orm.default_entity_manager', getRepository]
+    arguments:
+      - cdigruttola\Module\Electronicinvoicefields\Entity\EinvoiceCustomerType
+
+  cdigruttola.module.electronicinvoicefields.repository.einvoice_address:
+    class: cdigruttola\Module\Electronicinvoicefields\Repository\EinvoiceAddressRepository
+    public: true
+    factory: ['@doctrine.orm.default_entity_manager', getRepository]
+    arguments:
+      - cdigruttola\Module\Electronicinvoicefields\Entity\EinvoiceAddress

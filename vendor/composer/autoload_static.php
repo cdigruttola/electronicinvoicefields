@@ -29,6 +29,7 @@ class ComposerStaticInitc37d6450b0d4011af3ce091ac26f26d8
         'EvenPositionAndControlCharTranslationTable' => __DIR__ . '/../..' . '/classes/EvenPositionAndControlCharTranslationTable.php',
         'OddPositionTranslationTable' => __DIR__ . '/../..' . '/classes/OddPositionTranslationTable.php',
         'cdigruttola\\Module\\Electronicinvoicefields\\Controller\\Admin\\AdminAddressCustomerTypeController' => __DIR__ . '/../..' . '/src/Controller/Admin/AdminAddressCustomerTypeController.php',
+        'cdigruttola\\Module\\Electronicinvoicefields\\Controller\\Admin\\AdminElectronicInvoiceController' => __DIR__ . '/../..' . '/src/Controller/Admin/AdminElectronicInvoiceController.php',
         'cdigruttola\\Module\\Electronicinvoicefields\\Core\\Domain\\AddressCustomerType\\AddressCustomerTypeFormDataProvider' => __DIR__ . '/../..' . '/src/Core/Domain/AddressCustomerType/AddressCustomerTypeFormDataProvider.php',
         'cdigruttola\\Module\\Electronicinvoicefields\\Core\\Domain\\AddressCustomerType\\CommandHandler\\AbstractAddressCustomerTypeHandler' => __DIR__ . '/../..' . '/src/Core/Domain/AddressCustomerType/CommandHandler/AbstractAddressCustomerTypeHandler.php',
         'cdigruttola\\Module\\Electronicinvoicefields\\Core\\Domain\\AddressCustomerType\\CommandHandler\\AddAddressCustomerTypeHandler' => __DIR__ . '/../..' . '/src/Core/Domain/AddressCustomerType/CommandHandler/AddAddressCustomerTypeHandler.php',
@@ -60,8 +61,16 @@ class ComposerStaticInitc37d6450b0d4011af3ce091ac26f26d8
         'cdigruttola\\Module\\Electronicinvoicefields\\Core\\Grid\\Definition\\Factory\\AddressCustomerTypeGridDefinitionFactory' => __DIR__ . '/../..' . '/src/Core/Grid/Definition/Factory/AddressCustomerTypeGridDefinitionFactory.php',
         'cdigruttola\\Module\\Electronicinvoicefields\\Core\\Grid\\Query\\AddressCustomerTypeQueryBuilder' => __DIR__ . '/../..' . '/src/Core/Grid/Query/AddressCustomerTypeQueryBuilder.php',
         'cdigruttola\\Module\\Electronicinvoicefields\\Core\\Search\\Filters\\AddressCustomerTypeFilters' => __DIR__ . '/../..' . '/src/Core/Search/Filters/AddressCustomerTypeFilters.php',
+        'cdigruttola\\Module\\Electronicinvoicefields\\Entity\\EinvoiceAddress' => __DIR__ . '/../..' . '/src/Entity/EinvoiceAddress.php',
+        'cdigruttola\\Module\\Electronicinvoicefields\\Entity\\EinvoiceCustomerType' => __DIR__ . '/../..' . '/src/Entity/EinvoiceCustomerType.php',
+        'cdigruttola\\Module\\Electronicinvoicefields\\Entity\\EinvoiceCustomerTypeLang' => __DIR__ . '/../..' . '/src/Entity/EinvoiceCustomerTypeLang.php',
         'cdigruttola\\Module\\Electronicinvoicefields\\Form\\Admin\\AddressCustomerTypeType' => __DIR__ . '/../..' . '/src/Form/Admin/AddressCustomerTypeType.php',
+        'cdigruttola\\Module\\Electronicinvoicefields\\Form\\Admin\\ConfigurationType' => __DIR__ . '/../..' . '/src/Form/Admin/ConfigurationType.php',
+        'cdigruttola\\Module\\Electronicinvoicefields\\Form\\DataConfiguration\\ConfigurationDataConfiguration' => __DIR__ . '/../..' . '/src/Form/DataConfiguration/ConfigurationDataConfiguration.php',
         'cdigruttola\\Module\\Electronicinvoicefields\\Form\\DataHandler\\AddressCustomerTypeFormDataHandler' => __DIR__ . '/../..' . '/src/Form/DataHandler/AddressCustomerTypeFormDataHandler.php',
+        'cdigruttola\\Module\\Electronicinvoicefields\\Form\\DataProvider\\ConfigurationFormDataProvider' => __DIR__ . '/../..' . '/src/Form/DataProvider/ConfigurationFormDataProvider.php',
+        'cdigruttola\\Module\\Electronicinvoicefields\\Repository\\EinvoiceAddressRepository' => __DIR__ . '/../..' . '/src/Repository/EinvoiceAddressRepository.php',
+        'cdigruttola\\Module\\Electronicinvoicefields\\Repository\\EinvoiceCustomerTypeRepository' => __DIR__ . '/../..' . '/src/Repository/EinvoiceCustomerTypeRepository.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
