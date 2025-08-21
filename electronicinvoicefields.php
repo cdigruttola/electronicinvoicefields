@@ -230,7 +230,7 @@ class Electronicinvoicefields extends Module
 
         /** @var EinvoiceAddressRepository $einvoiceAddressRepository */
         $einvoiceAddressRepository = $this->get('cdigruttola.module.electronicinvoicefields.repository.einvoice_address');
-        /** @var EinvoiceAddress $einvoiceAddress */
+        /** @var EinvoiceAddress|null $einvoiceAddress */
         $einvoiceAddress = $einvoiceAddressRepository->findOneBy(['idAddress' => $id_address]);
 
         $formBuilder = $params['form_builder'];
@@ -250,7 +250,7 @@ class Electronicinvoicefields extends Module
             ]
         );
 
-        $params['data']['sdi'] = Tools::strtoupper($einvoiceAddress->getSdi());
+        $params['data']['sdi'] = Tools::strtoupper($einvoiceAddress?->getSdi() ?? '');
 
         $formBuilder->add(
             'pec',
@@ -264,7 +264,7 @@ class Electronicinvoicefields extends Module
             ]
         );
 
-        $params['data']['pec'] = $einvoiceAddress->getPec();
+        $params['data']['pec'] = $einvoiceAddress?->getPec() ?? '';
 
         /** @var EinvoiceCustomerTypeRepository $customerTypeRepository */
         $customerTypeRepository = $this->get('cdigruttola.module.electronicinvoicefields.repository.einvoice_customer_type');
@@ -285,7 +285,7 @@ class Electronicinvoicefields extends Module
             ]
         );
 
-        $params['data']['id_addresscustomertype'] = $einvoiceAddress->getIdAddressCustomerType();
+        $params['data']['id_addresscustomertype'] = $einvoiceAddress?->getIdAddressCustomerType() ?? 1;
 
         $formBuilder->setData($params['data']);
     }
@@ -534,20 +534,24 @@ class Electronicinvoicefields extends Module
             }
 
             /** @var EntityManagerInterface $entityManager */
-            $entityManager = $this->get(EntityManagerInterface::class);
+            $entityManager = $this->get('doctrine.orm.default_entity_manager');
             /** @var EinvoiceAddressRepository $einvoiceAddressRepository */
             $einvoiceAddressRepository = $this->get('cdigruttola.module.electronicinvoicefields.repository.einvoice_address');
 
             if ($id_address) {
-                /** @var EinvoiceAddress $einvoiceAddress */
+                /** @var EinvoiceAddress|null $einvoiceAddress */
                 $einvoiceAddress = $einvoiceAddressRepository->findOneBy(['idAddress' => $id_address]);
+                if (null === $einvoiceAddress) {
+                    /** @var EinvoiceAddress $einvoiceAddress */
+                    $einvoiceAddress = new EinvoiceAddress();
+                }
             } else {
                 /** @var EinvoiceAddress $einvoiceAddress */
                 $einvoiceAddress = new EinvoiceAddress();
             }
             $einvoiceAddress->setIdAddress($id_address);
             $einvoiceAddress->setSdi(Tools::strtoupper($sdi));
-            $einvoiceAddress->setPec(Tools::strtoupper($pec));
+            $einvoiceAddress->setPec($pec);
             $einvoiceAddress->setidAddresscustomertype($id_addresscustomertype);
 
             $entityManager->persist($einvoiceAddress);
