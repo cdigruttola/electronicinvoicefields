@@ -34,6 +34,7 @@ if (!defined('_PS_VERSION_')) {
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\QueryBuilder;
 
 class EinvoiceCustomerTypeRepository extends EntityRepository
 {
@@ -41,4 +42,25 @@ class EinvoiceCustomerTypeRepository extends EntityRepository
     {
         parent::__construct($em, $class);
     }
+
+    public function findByLang($idLang)
+    {
+        /** @var QueryBuilder $qb */
+        $qb = $this->createQueryBuilder('c');
+        $qb
+            ->select('c.id as id_addresscustomertype, c.needInvoice, c.removable , c.active, cl.name')
+            ->join('c.nameLangs', 'cl')
+            ->andWhere('cl.lang = :idLang')
+            ->setParameter('idLang', $idLang);
+
+        $result = $qb->getQuery()->getArrayResult();
+
+        $faqs = [];
+        foreach ($result as $row) {
+            $faqs[$row['id_addresscustomertype']] = $row;
+        }
+
+        return $faqs;
+    }
+
 }

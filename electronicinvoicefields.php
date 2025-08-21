@@ -24,8 +24,16 @@
  */
 
 use cdigruttola\Module\Electronicinvoicefields\Form\DataConfiguration\ConfigurationDataConfiguration;
+use cdigruttola\Module\Electronicinvoicefields\Repository\EinvoiceAddressRepository;
+use cdigruttola\Module\Electronicinvoicefields\Repository\EinvoiceCustomerTypeRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
+use PrestaShop\PrestaShop\Core\ConstraintValidator\Constraints\CleanHtml;
+use PrestaShopBundle\Form\Admin\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Validator\Constraints\Length;
+use cdigruttola\Module\Electronicinvoicefields\Entity\EinvoiceAddress;
 
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -219,19 +227,22 @@ class Electronicinvoicefields extends Module
         $pec_required = Configuration::get(ConfigurationDataConfiguration::EINVOICE_PEC_REQUIRED, null, null, $id_shop);
 
         $id_address = isset($params['id']) ? (int) $params['id'] : null;
-        $obj = new EInvoiceAddress($id_address);
+
+        /** @var EinvoiceAddressRepository $einvoiceAddressRepository */
+        $einvoiceAddressRepository = $this->get('cdigruttola.module.electronicinvoicefields.repository.einvoice_address');
+        /** @var EinvoiceAddress $einvoiceAddress */
+        $einvoiceAddress = $einvoiceAddressRepository->findOneBy(['idAddress' => $id_address]);
 
         $formBuilder = $params['form_builder'];
-
         $formBuilder->add(
             'sdi',
-            Symfony\Component\Form\Extension\Core\Type\TextType::class,
+            TextType::class,
             [
                 'label' => $this->trans('SDI Code', [], 'Modules.Electronicinvoicefields.Einvoice'),
                 'required' => $sdi_required,
                 'constraints' => [
-                    new PrestaShop\PrestaShop\Core\ConstraintValidator\Constraints\CleanHtml(),
-                    new Symfony\Component\Validator\Constraints\Length([
+                    new CleanHtml(),
+                    new Length([
                         'max' => 7,
                         'maxMessage' => $this->trans('Max caracters allowed : 7', [], 'Modules.Electronicinvoicefields.Einvoice'),
                     ]),
@@ -239,36 +250,44 @@ class Electronicinvoicefields extends Module
             ]
         );
 
-        $params['data']['sdi'] = Tools::strtoupper((string) $obj->sdi);
+        $params['data']['sdi'] = Tools::strtoupper($einvoiceAddress->getSdi());
 
         $formBuilder->add(
             'pec',
-            PrestaShopBundle\Form\Admin\Type\EmailType::class,
+            EmailType::class,
             [
                 'label' => $this->trans('PEC Address', [], 'Modules.Electronicinvoicefields.Einvoice'),
                 'required' => $pec_required,
                 'constraints' => [
-                    new PrestaShop\PrestaShop\Core\ConstraintValidator\Constraints\CleanHtml(),
+                    new CleanHtml(),
                 ],
             ]
         );
 
-        $params['data']['pec'] = (string) $obj->pec;
+        $params['data']['pec'] = $einvoiceAddress->getPec();
+
+        /** @var EinvoiceCustomerTypeRepository $customerTypeRepository */
+        $customerTypeRepository = $this->get('cdigruttola.module.electronicinvoicefields.repository.einvoice_customer_type');
+        $customerTypes = $customerTypeRepository->findByLang($this->context->language->id);
+
+        $choices = [];
+        foreach ($customerTypes as $customerType) {
+            $choices[$customerType['name']] = $customerType['id_addresscustomertype'];
+        }
 
         $formBuilder->add(
             'id_addresscustomertype',
             ChoiceType::class,
             [
-                'choices' => Addresscustomertype::getAddressCustomerTypeChoice($this->context->language->id),
+                'choices' => $choices,
                 'required' => true,
                 'label' => $this->trans('Customer Type', [], 'Modules.Electronicinvoicefields.Einvoice'),
             ]
         );
 
-        $params['data']['id_addresscustomertype'] = (int) $obj->id_addresscustomertype;
+        $params['data']['id_addresscustomertype'] = $einvoiceAddress->getIdAddressCustomerType();
 
         $formBuilder->setData($params['data']);
-        unset($obj);
     }
 
     public function hookActionAdminAddressesFormModifier($params)
@@ -277,14 +296,20 @@ class Electronicinvoicefields extends Module
             return;
         }
         $switch = 'radio';
-        if (version_compare(_PS_VERSION_, '1.6', '>=') === true) {
-            $switch = 'switch';
-        }
 
         foreach ($params['fields'][0]['form']['input'] as $key => $value) {
             if ($value['name'] == 'vat_number') {
                 break;
             }
+        }
+
+        /** @var EinvoiceCustomerTypeRepository $customerTypeRepository */
+        $customerTypeRepository = $this->get('cdigruttola.module.electronicinvoicefields.repository.einvoice_customer_type');
+        $customerTypes = $customerTypeRepository->findByLang($this->context->language->id);
+
+        $choices = [];
+        foreach ($customerTypes as $customerType) {
+            $choices[$customerType['name']] = $customerType['id_addresscustomertype'];
         }
 
         $part1 = array_slice($params['fields'][0]['form']['input'], 0, $key + 1);
@@ -312,7 +337,7 @@ class Electronicinvoicefields extends Module
                 'name' => 'id_addresscustomertype',
                 'class' => 't',
                 'is_bool' => true,
-                'values' => Addresscustomertype::getAddressCustomerTypeChoice($this->context->language->id),
+                'values' => $choices,
             ],
         ];
 
@@ -323,12 +348,15 @@ class Electronicinvoicefields extends Module
         } else {
             $id_address = (int) Tools::getValue('id_address');
         }
-        $obj = new EInvoiceAddress($id_address);
 
-        $params['fields_value']['sdi'] = Tools::strtoupper((string) $obj->sdi);
-        $params['fields_value']['pec'] = (string) $obj->pec;
-        $params['fields_value']['id_addresscustomertype'] = (int) $obj->id_addresscustomertype;
-        unset($obj);
+        /** @var EinvoiceAddressRepository $einvoiceAddressRepository */
+        $einvoiceAddressRepository = $this->get('cdigruttola.module.electronicinvoicefields.repository.einvoice_address');
+        /** @var EinvoiceAddress $einvoiceAddress */
+        $einvoiceAddress = $einvoiceAddressRepository->findOneBy(['idAddress' => $id_address]);
+
+        $params['fields_value']['sdi'] = Tools::strtoupper($einvoiceAddress->getSdi());
+        $params['fields_value']['pec'] = $einvoiceAddress->getPec();
+        $params['fields_value']['id_addresscustomertype'] = $einvoiceAddress->getIdAddressCustomerType();
     }
 
     public function hookActionValidateCustomerAddressForm($params)
@@ -439,16 +467,23 @@ class Electronicinvoicefields extends Module
             return;
         }
         $id_address = (int) $params['object']->id;
-        $address = new Address((int) $id_address);
+        $address = new Address($id_address);
         if (!$address->isUsed()) {
-            $eiaddress = new EInvoiceAddress($id_address);
-            $eiaddress->delete();
+            /** @var EntityManagerInterface $entityManager */
+            $entityManager = $this->get(EntityManagerInterface::class);
+            /** @var EinvoiceAddressRepository $einvoiceAddressRepository */
+            $einvoiceAddressRepository = $this->get('cdigruttola.module.electronicinvoicefields.repository.einvoice_address');
+            /** @var EinvoiceAddress $einvoiceAddress */
+            $einvoiceAddress = $einvoiceAddressRepository->findOneBy(['idAddress' => $id_address]);
+
+            $entityManager->remove($einvoiceAddress);
+            $entityManager->flush();
         }
     }
 
     public function hookAddWebserviceResources($params)
     {
-        if (Module::isEnabled('electronicinvoicefields')) {
+        if ($this->active) {
             $def = [
                 'pec' => ['type' => ObjectModel::TYPE_STRING, 'validate' => 'isGenericName'],
                 'sdi' => ['type' => ObjectModel::TYPE_STRING, 'validate' => 'isGenericName'],
@@ -498,15 +533,25 @@ class Electronicinvoicefields extends Module
                 }
             }
 
-            $eiaddress = new EInvoiceAddress();
+            /** @var EntityManagerInterface $entityManager */
+            $entityManager = $this->get(EntityManagerInterface::class);
+            /** @var EinvoiceAddressRepository $einvoiceAddressRepository */
+            $einvoiceAddressRepository = $this->get('cdigruttola.module.electronicinvoicefields.repository.einvoice_address');
+
             if ($id_address) {
-                $eiaddress = new $eiaddress($id_address);
+                /** @var EinvoiceAddress $einvoiceAddress */
+                $einvoiceAddress = $einvoiceAddressRepository->findOneBy(['idAddress' => $id_address]);
+            } else {
+                /** @var EinvoiceAddress $einvoiceAddress */
+                $einvoiceAddress = new EinvoiceAddress();
             }
-            $eiaddress->id_address = (int) $id_address;
-            $eiaddress->sdi = Tools::strtoupper((string) $sdi);
-            $eiaddress->pec = (string) $pec;
-            $eiaddress->id_addresscustomertype = (int) $id_addresscustomertype;
-            $eiaddress->save();
+            $einvoiceAddress->setIdAddress($id_address);
+            $einvoiceAddress->setSdi(Tools::strtoupper($sdi));
+            $einvoiceAddress->setPec(Tools::strtoupper($pec));
+            $einvoiceAddress->setidAddresscustomertype($id_addresscustomertype);
+
+            $entityManager->persist($einvoiceAddress);
+            $entityManager->flush();
         }
     }
 
@@ -524,7 +569,7 @@ class Electronicinvoicefields extends Module
         $sdi = (string) Tools::getValue('sdi');
         $pec = (string) Tools::getValue('pec');
 
-        $params['object']->id_addresscustomertype = (int) $id_addresscustomertype;
+        $params['object']->id_addresscustomertype = $id_addresscustomertype;
         $params['object']->sdi = (string) $sdi;
         $params['object']->pec = (string) $pec;
 

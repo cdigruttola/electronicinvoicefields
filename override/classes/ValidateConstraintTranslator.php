@@ -23,6 +23,7 @@
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
 
+use cdigruttola\Module\Electronicinvoicefields\Form\DataConfiguration\ConfigurationDataConfiguration;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 if (!defined('_PS_VERSION_')) {
@@ -54,7 +55,7 @@ class ValidateConstraintTranslator extends ValidateConstraintTranslatorCore
                 return $this->translator->trans(
                     'Format should be %s and your age must be greater then %s.',
                     [Tools::formatDateStr('31 May 1970'),
-                        Configuration::get(Electronicinvoicefields::EINVOICE_MINIMUM_USER_AGE, null, null, $id_shop), ],
+                        Configuration::get(ConfigurationDataConfiguration::EINVOICE_MINIMUM_USER_AGE, null, null, $id_shop), ],
                     'Modules.Electronicinvoicefields.Einvoice'
                 );
             }

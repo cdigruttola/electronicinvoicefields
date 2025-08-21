@@ -97,24 +97,6 @@ class Addresscustomertype extends ObjectModel
     }
 
     /**
-     * @param $idLang
-     *
-     * @return array
-     *
-     * @throws PrestaShopDatabaseException
-     */
-    public static function getAddressCustomerTypeChoice($idLang): array
-    {
-        $choices = [];
-        $customerTypes = self::getAddressCustomerType($idLang);
-        foreach ($customerTypes as $customerType) {
-            $choices[$customerType['name']] = $customerType['id_addresscustomertype'];
-        }
-
-        return $choices;
-    }
-
-    /**
      * @param $addressCustomerTypeId
      *
      * @return bool

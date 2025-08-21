@@ -68,6 +68,6 @@ class Address extends AddressCore
     {
         $address_type = new Addresscustomertype($this->id_addresscustomertype);
 
-        return (bool) $address_type->need_invoice;
+        return $address_type->need_invoice;
     }
 }
