@@ -23,8 +23,14 @@
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
+use Symfony\Component\HttpClient\Exception\ClientException;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Contracts\HttpClient\ResponseInterface;
 
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -46,8 +52,8 @@ class Validate extends ValidateCore
         $einvoice = Module::getInstanceByName('electronicinvoicefields');
         if (isset($einvoice) && isset($einvoice->active) && $einvoice->active) {
             $id_shop = (int) Context::getContext()->shop->id;
-            if (Configuration::get(Electronicinvoicefields::EINVOICE_CHECK_USER_AGE, null, null, $id_shop)) {
-                $minimum = (int) Configuration::get(Electronicinvoicefields::EINVOICE_MINIMUM_USER_AGE, null, null, $id_shop);
+            if (Configuration::get(\cdigruttola\Module\Electronicinvoicefields\Form\DataConfiguration\ConfigurationDataConfiguration::EINVOICE_CHECK_USER_AGE, null, null, $id_shop)) {
+                $minimum = (int) Configuration::get(\cdigruttola\Module\Electronicinvoicefields\Form\DataConfiguration\ConfigurationDataConfiguration::EINVOICE_MINIMUM_USER_AGE, null, null, $id_shop);
                 $d = DateTime::createFromFormat($format, $date);
                 if (!empty(DateTime::getLastErrors()['warning_count']) || false === $d) {
                     return false;
@@ -95,14 +101,13 @@ class Validate extends ValidateCore
             $url = self::MIOCODICEFISCALE_URL;
             $url = str_replace(['%api%', '%dni%'], [$api, $dni], $url);
             try {
-                $client = new Client();
-                $response = $client->get($url);
-                $data = json_decode($response->getBody(), true);
-
+                $client = HttpClient::create();
+                $response = $client->request('GET', $url);
+                $data = json_decode($response->getContent(), true);
                 return $data['status'];
-            } catch (ClientException $e) {
+            } catch (ClientException | ClientExceptionInterface | RedirectionExceptionInterface | ServerExceptionInterface | TransportExceptionInterface $e) {
                 $response = $e->getResponse();
-                PrestaShopLogger::addLog('Status error ' . $response->getStatusCode() . ', reason ' . $response->getReasonPhrase());
+                PrestaShopLogger::addLog('Status error ' . $response->getStatusCode() . ', reason ' . self::getReasonPhraseFromResponse($response));
             }
         }
 
@@ -126,16 +131,23 @@ class Validate extends ValidateCore
         $url = self::VIES_URL;
         $url = str_replace(['%iso%', '%vat%'], [$country_iso, $vat_number], $url);
         try {
-            $client = new Client();
-            $response = $client->get($url);
-            $data = json_decode($response->getBody(), true);
-
+            $client = HttpClient::create();
+            $response = $client->request('GET', $url);
+            $data = json_decode($response->getContent(), true);
             return $data['isValid'];
-        } catch (ClientException $e) {
+        } catch (ClientException | ClientExceptionInterface | RedirectionExceptionInterface | ServerExceptionInterface | TransportExceptionInterface $e) {
             $response = $e->getResponse();
-            PrestaShopLogger::addLog('Status error ' . $response->getStatusCode() . ', reason ' . $response->getReasonPhrase());
+            PrestaShopLogger::addLog('Status error ' . $response->getStatusCode() . ', reason ' . self::getReasonPhraseFromResponse($response));
 
             return false;
         }
     }
+
+    private static function getReasonPhraseFromResponse(ResponseInterface $response): string
+    {
+        $statusCode = $response->getStatusCode();
+
+        return Response::$statusTexts[$statusCode] ?? 'GENERIC_ERROR';
+    }
+
 }

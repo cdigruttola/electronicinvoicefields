@@ -23,6 +23,7 @@
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
 
+use cdigruttola\Module\Electronicinvoicefields\Form\DataConfiguration\ConfigurationDataConfiguration;
 use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
@@ -33,14 +34,6 @@ require 'vendor/autoload.php';
 
 class Electronicinvoicefields extends Module
 {
-    public const EINVOICE_PEC_REQUIRED = 'EINVOICE_PEC_REQUIRED';
-    public const EINVOICE_SDI_REQUIRED = 'EINVOICE_SDI_REQUIRED';
-    public const EINVOICE_VAT_VIES_VALIDATE = 'EINVOICE_VAT_VIES_VALIDATE';
-    public const EINVOICE_DNI_VALIDATE = 'EINVOICE_DNI_VALIDATE';
-    public const EINVOICE_DNI_VALIDATE_MIOCODICEFISCALE_API = 'EINVOICE_DNI_VALIDATE_MIOCODICEFISCALE_API';
-    public const EINVOICE_CHECK_USER_AGE = 'EINVOICE_CHECK_USER_AGE';
-    public const EINVOICE_MINIMUM_USER_AGE = 'EINVOICE_MINIMUM_USER_AGE';
-
     public function __construct()
     {
         $this->name = 'electronicinvoicefields';
@@ -129,13 +122,13 @@ class Electronicinvoicefields extends Module
     {
         include dirname(__FILE__) . '/sql/uninstall.php';
 
-        Configuration::deleteByName(self::EINVOICE_PEC_REQUIRED);
-        Configuration::deleteByName(self::EINVOICE_SDI_REQUIRED);
-        Configuration::deleteByName(self::EINVOICE_VAT_VIES_VALIDATE);
-        Configuration::deleteByName(self::EINVOICE_DNI_VALIDATE);
-        Configuration::deleteByName(self::EINVOICE_DNI_VALIDATE_MIOCODICEFISCALE_API);
-        Configuration::deleteByName(self::EINVOICE_CHECK_USER_AGE);
-        Configuration::deleteByName(self::EINVOICE_MINIMUM_USER_AGE);
+        Configuration::deleteByName(ConfigurationDataConfiguration::EINVOICE_PEC_REQUIRED);
+        Configuration::deleteByName(ConfigurationDataConfiguration::EINVOICE_SDI_REQUIRED);
+        Configuration::deleteByName(ConfigurationDataConfiguration::EINVOICE_VAT_VIES_VALIDATE);
+        Configuration::deleteByName(ConfigurationDataConfiguration::EINVOICE_DNI_VALIDATE);
+        Configuration::deleteByName(ConfigurationDataConfiguration::EINVOICE_DNI_VALIDATE_MIOCODICEFISCALE_API);
+        Configuration::deleteByName(ConfigurationDataConfiguration::EINVOICE_CHECK_USER_AGE);
+        Configuration::deleteByName(ConfigurationDataConfiguration::EINVOICE_MINIMUM_USER_AGE);
 
         return parent::uninstall();
     }
@@ -158,8 +151,8 @@ class Electronicinvoicefields extends Module
         }
         $id_shop = (int) $this->context->shop->id;
 
-        $sdi_required = (int) Configuration::get(self::EINVOICE_SDI_REQUIRED, null, null, $id_shop);
-        $pec_required = (int) Configuration::get(self::EINVOICE_PEC_REQUIRED, null, null, $id_shop);
+        $sdi_required = (int) Configuration::get(ConfigurationDataConfiguration::EINVOICE_SDI_REQUIRED, null, null, $id_shop);
+        $pec_required = (int) Configuration::get(ConfigurationDataConfiguration::EINVOICE_PEC_REQUIRED, null, null, $id_shop);
 
         $this->context->controller->addJS($this->_path . 'views/js/front.js');
         $this->context->controller->addCSS($this->_path . 'views/css/front.css');
@@ -222,8 +215,8 @@ class Electronicinvoicefields extends Module
 
         $id_shop = $this->context->shop->id;
 
-        $sdi_required = Configuration::get(self::EINVOICE_SDI_REQUIRED, null, null, $id_shop);
-        $pec_required = Configuration::get(self::EINVOICE_PEC_REQUIRED, null, null, $id_shop);
+        $sdi_required = Configuration::get(ConfigurationDataConfiguration::EINVOICE_SDI_REQUIRED, null, null, $id_shop);
+        $pec_required = Configuration::get(ConfigurationDataConfiguration::EINVOICE_PEC_REQUIRED, null, null, $id_shop);
 
         $id_address = isset($params['id']) ? (int) $params['id'] : null;
         $obj = new EInvoiceAddress($id_address);
@@ -366,9 +359,9 @@ class Electronicinvoicefields extends Module
 
             $dni = $form->getField('dni');
             $id_shop = $this->context->shop->id;
-            if (isset($dni) && Configuration::get(self::EINVOICE_DNI_VALIDATE, null, null, $id_shop)) {
+            if (isset($dni) && Configuration::get(ConfigurationDataConfiguration::EINVOICE_DNI_VALIDATE, null, null, $id_shop)) {
                 $dni_value = $dni->getValue();
-                if (!empty($dni_value) && !Validate::checkDNICode($dni_value, Configuration::get(self::EINVOICE_DNI_VALIDATE_MIOCODICEFISCALE_API, null, null, $id_shop))) {
+                if (!empty($dni_value) && !Validate::checkDNICode($dni_value, Configuration::get(ConfigurationDataConfiguration::EINVOICE_DNI_VALIDATE_MIOCODICEFISCALE_API, null, null, $id_shop))) {
                     $is_valid &= false;
                     $dni->addError($this->trans('Invalid DNI Code', [], 'Modules.Electronicinvoicefields.Einvoice'));
                 }
@@ -376,7 +369,7 @@ class Electronicinvoicefields extends Module
         }
 
         $vat_number = $form->getField('vat_number');
-        if (isset($vat_number) && Configuration::get(self::EINVOICE_VAT_VIES_VALIDATE, null, null, $id_shop)) {
+        if (isset($vat_number) && Configuration::get(ConfigurationDataConfiguration::EINVOICE_VAT_VIES_VALIDATE, null, null, $id_shop)) {
             $vat_number_value = $vat_number->getValue();
             if (!empty($vat_number_value) && !Validate::checkVatNumber($vat_number_value, $iso_country)) {
                 $is_valid &= false;

@@ -23,9 +23,7 @@
 * #}
 
 {% set enableSidebar = true %}
-{% set layoutTitle = 'Edit: %name%'|trans({
-    '%name%': editableAddressCustomerType.localizedNames[contextLangId]
-}, 'Admin.Actions') %}
+{% set layoutTitle = title %}
 
 {% extends '@PrestaShop/Admin/layout.html.twig' %}
 

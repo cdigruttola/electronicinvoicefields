@@ -27,9 +27,9 @@ declare(strict_types=1);
 
 namespace cdigruttola\Module\Electronicinvoicefields\Core\Domain\AddressCustomerType;
 
-use cdigruttola\Module\Electronicinvoicefields\Core\Domain\AddressCustomerType\Query\GetAddressCustomerTypeForEditing;
-use cdigruttola\Module\Electronicinvoicefields\Core\Domain\AddressCustomerType\QueryResult\EditableAddressCustomerType;
-use PrestaShop\PrestaShop\Core\CommandBus\CommandBusInterface;
+use cdigruttola\Module\Electronicinvoicefields\Entity\EinvoiceCustomerType;
+use cdigruttola\Module\Electronicinvoicefields\Entity\EinvoiceCustomerTypeLang;
+use Doctrine\ORM\EntityRepository;
 use PrestaShop\PrestaShop\Core\Form\IdentifiableObject\DataProvider\FormDataProviderInterface;
 
 if (!defined('_PS_VERSION_')) {
@@ -42,14 +42,19 @@ if (!defined('_PS_VERSION_')) {
 final class AddressCustomerTypeFormDataProvider implements FormDataProviderInterface
 {
     /**
-     * @var CommandBusInterface
+     * @var EntityRepository
      */
-    private $queryBus;
+    private $repository;
 
+    /**
+     * Constructor.
+     *
+     * @param EntityRepository $repository
+     */
     public function __construct(
-        CommandBusInterface $queryBus
+        EntityRepository $repository,
     ) {
-        $this->queryBus = $queryBus;
+        $this->repository = $repository;
     }
 
     /**
@@ -57,14 +62,19 @@ final class AddressCustomerTypeFormDataProvider implements FormDataProviderInter
      */
     public function getData($id)
     {
-        /** @var EditableAddressCustomerType $editableAddressCustomerType */
-        $editableAddressCustomerType = $this->queryBus->handle(new GetAddressCustomerTypeForEditing((int) $id));
+        /** @var EinvoiceCustomerType $entity */
+        $entity = $this->repository->find($id);
 
-        return [
-            'name' => $editableAddressCustomerType->getLocalizedNames(),
-            'active' => $editableAddressCustomerType->isActive(),
-            'need_invoice' => $editableAddressCustomerType->isNeedInvoice(),
-        ];
+        $entityData = [];
+        $entityData['active'] = $entity->isActive();
+        $entityData['need_invoice'] = $entity->isNeedInvoice();
+
+        /** @var EinvoiceCustomerTypeLang $nameLang */
+        foreach ($entity->getNameLangs() as $nameLang) {
+            $entityData['name'][$nameLang->getLang()->getId()] = $nameLang->getName();
+        }
+
+        return $entityData;
     }
 
     /**

@@ -75,6 +75,20 @@ class EinvoiceCustomerType
     private $active;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="date_add", type="datetime")
+     */
+    private $dateAdd;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="date_upd", type="datetime")
+     */
+    private $dateUpd;
+
+    /**
      * @ORM\OneToMany(targetEntity="EinvoiceCustomerTypeLang", cascade={"persist", "remove"}, mappedBy="einvoiceCustomerType")
      */
     private $nameLangs;
@@ -128,6 +142,30 @@ class EinvoiceCustomerType
     public function setActive(bool $active): self
     {
         $this->active = $active;
+
+        return $this;
+    }
+
+    public function getDateAdd(): \DateTime
+    {
+        return $this->dateAdd;
+    }
+
+    public function setDateAdd(\DateTime $dateAdd): self
+    {
+        $this->dateAdd = $dateAdd;
+
+        return $this;
+    }
+
+    public function getDateUpd(): \DateTime
+    {
+        return $this->dateUpd;
+    }
+
+    public function setDateUpd(\DateTime $dateUpd): self
+    {
+        $this->dateUpd = $dateUpd;
 
         return $this;
     }

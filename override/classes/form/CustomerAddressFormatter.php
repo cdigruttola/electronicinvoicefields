@@ -41,6 +41,7 @@ class CustomerAddressFormatter extends CustomerAddressFormatterCore
         TranslatorInterface $translator,
         array $availableCountries
     ) {
+        parent::__construct($country, $translator, $availableCountries);
         $this->country = $country;
         $this->translator = $translator;
         $this->availableCountries = $availableCountries;

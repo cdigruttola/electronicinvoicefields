@@ -72,21 +72,6 @@ class Addresscustomertype extends ObjectModel
 
     /**
      * @param $idLang
-     *
-     * @return array|bool|mysqli_result|PDOStatement|resource|null
-     *
-     * @throws PrestaShopDatabaseException
-     */
-    public static function getAddressCustomerTypes($idLang)
-    {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
-        SELECT *
-		FROM `' . _DB_PREFIX_ . 'einvoice_customer_type` c
-		LEFT JOIN `' . _DB_PREFIX_ . 'einvoice_customer_type_lang` cl ON (c.`id_addresscustomertype` = cl.`id_addresscustomertype` AND cl.`id_lang` = ' . (int) $idLang . ')');
-    }
-
-    /**
-     * @param $idLang
      * @param bool $activeOnly
      *
      * @return array

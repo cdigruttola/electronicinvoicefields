@@ -19,7 +19,7 @@ services:
   cdigruttola.module.electronicinvoicefields.core.form.identifiable_object.data_provider.address_customer_type_form_data_provider:
     class: 'cdigruttola\Module\Electronicinvoicefields\Core\Domain\AddressCustomerType\AddressCustomerTypeFormDataProvider'
     arguments:
-      - '@prestashop.core.query_bus'
+      - '@cdigruttola.module.electronicinvoicefields.repository.einvoice_customer_type'
 
   cdigruttola.module.electronicinvoicefields.core.form.identifiable_object.handler.address_customer_type_form_handler:
     class: 'PrestaShop\PrestaShop\Core\Form\IdentifiableObject\Handler\FormHandler'
@@ -30,7 +30,10 @@ services:
   cdigruttola.module.electronicinvoicefields.core.form.identifiable_object.data_handler.address_customer_type_form_data_handler:
     class: 'cdigruttola\Module\Electronicinvoicefields\Form\DataHandler\AddressCustomerTypeFormDataHandler'
     arguments:
-      - '@prestashop.core.command_bus'
+      - '@cdigruttola.module.electronicinvoicefields.repository.einvoice_customer_type'
+      - '@prestashop.core.admin.lang.repository'
+      - '@doctrine.orm.default_entity_manager'
+      - "@=service('prestashop.adapter.legacy.context').getLanguages()"
 
   cdigruttola.module.electronicinvoicefields.form.configuration_type:
     class: 'cdigruttola\Module\Electronicinvoicefields\Form\Admin\ConfigurationType'

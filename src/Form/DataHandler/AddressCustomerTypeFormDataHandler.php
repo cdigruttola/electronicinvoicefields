@@ -27,11 +27,12 @@ declare(strict_types=1);
 
 namespace cdigruttola\Module\Electronicinvoicefields\Form\DataHandler;
 
-use cdigruttola\Module\Electronicinvoicefields\Core\Domain\AddressCustomerType\Command\AddAddressCustomerTypeCommand;
-use cdigruttola\Module\Electronicinvoicefields\Core\Domain\AddressCustomerType\Command\EditAddressCustomerTypeCommand;
-use cdigruttola\Module\Electronicinvoicefields\Core\Domain\AddressCustomerType\ValueObject\AddressCustomerTypeId;
-use PrestaShop\PrestaShop\Core\CommandBus\CommandBusInterface;
+use cdigruttola\Module\Electronicinvoicefields\Entity\EinvoiceCustomerType;
+use cdigruttola\Module\Electronicinvoicefields\Entity\EinvoiceCustomerTypeLang;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use PrestaShop\PrestaShop\Core\Form\IdentifiableObject\DataHandler\FormDataHandlerInterface;
+use PrestaShopBundle\Entity\Repository\LangRepository;
 
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -43,14 +44,35 @@ if (!defined('_PS_VERSION_')) {
 final class AddressCustomerTypeFormDataHandler implements FormDataHandlerInterface
 {
     /**
-     * @var CommandBusInterface
+     * @var EntityRepository
      */
-    private $bus;
+    private $entityRepository;
+
+    /**
+     * @var LangRepository
+     */
+    private $langRepository;
+
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+
+    /**
+     * @var array
+     */
+    private $languages;
 
     public function __construct(
-        CommandBusInterface $bus
+        EntityRepository $entityRepository,
+        LangRepository $langRepository,
+        EntityManagerInterface $entityManager,
+        array $languages,
     ) {
-        $this->bus = $bus;
+        $this->entityRepository = $entityRepository;
+        $this->langRepository = $langRepository;
+        $this->entityManager = $entityManager;
+        $this->languages = $languages;
     }
 
     /**
@@ -58,48 +80,65 @@ final class AddressCustomerTypeFormDataHandler implements FormDataHandlerInterfa
      */
     public function create(array $data)
     {
-        $command = $this->buildAddressCustomerTypeAddCommandFromFormData($data);
+        $entity = new EinvoiceCustomerType();
 
-        /** @var AddressCustomerTypeId $addressCustomerTypeId */
-        $addressCustomerTypeId = $this->bus->handle($command);
+        $entity->setActive((bool) $data['active']);
+        $entity->setNeedInvoice((bool) $data['need_invoice']);
+        $entity->setRemovable(true);
+        $entity->setDateAdd(new \DateTime());
+        $entity->setDateUpd(new \DateTime());
 
-        return $addressCustomerTypeId->getValue();
+        foreach ($this->languages as $language) {
+            $langId = (int) $language['id_lang'];
+            $lang = $this->langRepository->findOneBy(['id' => $langId]);
+            $faqLang = new EinvoiceCustomerTypeLang();
+
+            $faqLang
+                ->setLang($lang)
+                ->setName($data['name'][$langId] ?? '');
+
+            $entity->addNameLang($faqLang);
+        }
+
+        $this->entityManager->persist($entity);
+        $this->entityManager->flush();
+
+        return $entity->getId();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function update($AddressCustomerTypeId, array $data)
+    public function update($id, array $data)
     {
-        $command = $this->buildAddressCustomerTypeEditCommand($AddressCustomerTypeId, $data);
+        /** @var EinvoiceCustomerType $entity */
+        $entity = $this->entityRepository->find($id);
 
-        $this->bus->handle($command);
-    }
+        $entity->setDateUpd(new \DateTime());
+        $entity->setActive((bool) $data['active']);
+        $entity->setNeedInvoice((bool) $data['need_invoice']);
 
-    /**
-     * @return AddAddressCustomerTypeCommand
-     */
-    private function buildAddressCustomerTypeAddCommandFromFormData(array $data)
-    {
-        $command = new AddAddressCustomerTypeCommand(
-            $data['name'],
-            $data['active'] ?? false,
-            $data['need_invoice'] ?? false
-        );
+        foreach ($this->languages as $language) {
+            $langId = (int) $language['id_lang'];
+            $nameLangByLangId = $entity->getNameLangByLangId($langId);
 
-        return $command;
-    }
+            $newEntity = false;
+            if (null === $nameLangByLangId) {
+                $nameLangByLangId = new EinvoiceCustomerTypeLang();
+                $lang = $this->langRepository->find($langId);
+                $nameLangByLangId->setLang($lang);
+                $newEntity = true;
+            }
 
-    /**
-     * @param int $AddressCustomerTypeId
-     *
-     * @return EditAddressCustomerTypeCommand
-     */
-    private function buildAddressCustomerTypeEditCommand($AddressCustomerTypeId, array $data)
-    {
-        return (new EditAddressCustomerTypeCommand($AddressCustomerTypeId))
-            ->setName($data['name'])
-            ->setActive((bool) $data['active'])
-            ->setNeedInvoice((bool) $data['need_invoice']);
+            $nameLangByLangId->setName($data['name'][$langId] ?? '');
+
+            if ($newEntity) {
+                $entity->addNameLang($nameLangByLangId);
+            }
+        }
+
+        $this->entityManager->flush();
+
+        return $entity->getId();
     }
 }
