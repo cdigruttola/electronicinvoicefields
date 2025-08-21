@@ -104,5 +104,4 @@ class EinvoiceCustomerTypeLang
 
         return $this;
     }
-
 }

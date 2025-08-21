@@ -96,5 +96,4 @@ class AdminElectronicInvoiceController extends PrestaShopAdminController
 
         return $redirectResponse;
     }
-
 }

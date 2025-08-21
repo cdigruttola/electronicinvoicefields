@@ -55,6 +55,7 @@ class AdminAddressCustomerTypeController extends PrestaShopAdminController
      *
      * #[AdminSecurity("is_granted(['read'], request.get('_legacy_controller'))", message="Access denied.")
      * @param GridFactory $addressCustomerTypeGridFactory
+     *
      * @return Response
      */
     public function indexAction(
@@ -78,7 +79,9 @@ class AdminAddressCustomerTypeController extends PrestaShopAdminController
      * @param Request $request
      * @param FormBuilderInterface $formDataHandler
      * @param FormHandler $formHandler
+     *
      * @return Response
+     *
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
@@ -127,6 +130,7 @@ class AdminAddressCustomerTypeController extends PrestaShopAdminController
      * @param Request $request
      * @param FormBuilderInterface $formBuilder
      * @param FormHandler $formHandler
+     *
      * @return Response
      */
     public function editAction(
@@ -168,6 +172,7 @@ class AdminAddressCustomerTypeController extends PrestaShopAdminController
      * @param int $addressCustomerTypeId
      *
      * @return RedirectResponse
+     *
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
      */
@@ -236,7 +241,8 @@ class AdminAddressCustomerTypeController extends PrestaShopAdminController
             $this->addFlashErrors($errors);
         }
 
-        return $this->redirectToRoute(self::INDEX_ROUTE);    }
+        return $this->redirectToRoute(self::INDEX_ROUTE);
+    }
 
     /**
      * #[AdminSecurity("is_granted(['update'], request.get('_legacy_controller'))", message="Access denied.")
@@ -274,8 +280,8 @@ class AdminAddressCustomerTypeController extends PrestaShopAdminController
     public static function getSubscribedServices(): array
     {
         return parent::getSubscribedServices() + [
-                LegacyContext::class => LegacyContext::class,
-                EntityManagerInterface::class => EntityManagerInterface::class,
-            ];
+            LegacyContext::class => LegacyContext::class,
+            EntityManagerInterface::class => EntityManagerInterface::class,
+        ];
     }
 }

@@ -62,5 +62,4 @@ class EinvoiceCustomerTypeRepository extends EntityRepository
 
         return $faqs;
     }
-
 }

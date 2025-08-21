@@ -25,12 +25,12 @@
 
 use cdigruttola\Module\Electronicinvoicefields\Form\DataConfiguration\ConfigurationDataConfiguration;
 use Symfony\Component\HttpClient\Exception\ClientException;
+use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
-use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
 if (!defined('_PS_VERSION_')) {
@@ -105,8 +105,9 @@ class Validate extends ValidateCore
                 $client = HttpClient::create();
                 $response = $client->request('GET', $url);
                 $data = json_decode($response->getContent(), true);
+
                 return $data['status'];
-            } catch (ClientException | ClientExceptionInterface | RedirectionExceptionInterface | ServerExceptionInterface | TransportExceptionInterface $e) {
+            } catch (ClientException|ClientExceptionInterface|RedirectionExceptionInterface|ServerExceptionInterface|TransportExceptionInterface $e) {
                 $response = $e->getResponse();
                 PrestaShopLogger::addLog('Status error ' . $response->getStatusCode() . ', reason ' . self::getReasonPhraseFromResponse($response));
             }
@@ -135,8 +136,9 @@ class Validate extends ValidateCore
             $client = HttpClient::create();
             $response = $client->request('GET', $url);
             $data = json_decode($response->getContent(), true);
+
             return $data['isValid'];
-        } catch (ClientException | ClientExceptionInterface | RedirectionExceptionInterface | ServerExceptionInterface | TransportExceptionInterface $e) {
+        } catch (ClientException|ClientExceptionInterface|RedirectionExceptionInterface|ServerExceptionInterface|TransportExceptionInterface $e) {
             $response = $e->getResponse();
             PrestaShopLogger::addLog('Status error ' . $response->getStatusCode() . ', reason ' . self::getReasonPhraseFromResponse($response));
 
@@ -150,5 +152,4 @@ class Validate extends ValidateCore
 
         return Response::$statusTexts[$statusCode] ?? 'GENERIC_ERROR';
     }
-
 }

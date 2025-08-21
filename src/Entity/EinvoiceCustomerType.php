@@ -193,5 +193,4 @@ class EinvoiceCustomerType
 
         return $this;
     }
-
 }

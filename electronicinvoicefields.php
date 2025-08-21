@@ -23,6 +23,7 @@
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
 
+use cdigruttola\Module\Electronicinvoicefields\Entity\EinvoiceAddress;
 use cdigruttola\Module\Electronicinvoicefields\Form\DataConfiguration\ConfigurationDataConfiguration;
 use cdigruttola\Module\Electronicinvoicefields\Repository\EinvoiceAddressRepository;
 use cdigruttola\Module\Electronicinvoicefields\Repository\EinvoiceCustomerTypeRepository;
@@ -33,7 +34,6 @@ use PrestaShopBundle\Form\Admin\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Validator\Constraints\Length;
-use cdigruttola\Module\Electronicinvoicefields\Entity\EinvoiceAddress;
 
 if (!defined('_PS_VERSION_')) {
     exit;
