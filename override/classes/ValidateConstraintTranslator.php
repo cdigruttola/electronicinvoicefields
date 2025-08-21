@@ -48,7 +48,7 @@ class ValidateConstraintTranslator extends ValidateConstraintTranslatorCore
     public function translate($validator)
     {
         $einvoice = Module::getInstanceByName('electronicinvoicefields');
-        if (isset($einvoice) && isset($einvoice->active) && $einvoice->active) {
+        if ($einvoice && $einvoice->active) {
             if ($validator === 'isBirthDate') {
                 $id_shop = (int) Context::getContext()->shop->id;
 

@@ -46,7 +46,7 @@ class ElectronicinvoicefieldsAjaxModuleFrontController extends ModuleFrontContro
             $cacheId = 'Addresscustomertype::needInvoice_' . $value;
             if (!Cache::isStored($cacheId)) {
                 $addressCustomerType = new Addresscustomertype((int) $value);
-                $var = ['need_invoice' => (bool) $addressCustomerType->need_invoice];
+                $var = ['need_invoice' => $addressCustomerType->need_invoice];
                 Cache::store($cacheId, $var);
             }
             $json_encode = json_encode(Cache::retrieve($cacheId));

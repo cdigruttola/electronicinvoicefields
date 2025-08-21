@@ -51,7 +51,7 @@ class Validate extends ValidateCore
         $toReturn = parent::isBirthDate($date, $format);
 
         $einvoice = Module::getInstanceByName('electronicinvoicefields');
-        if (isset($einvoice) && isset($einvoice->active) && $einvoice->active) {
+        if ($einvoice && $einvoice->active) {
             $id_shop = (int) Context::getContext()->shop->id;
             if (Configuration::get(ConfigurationDataConfiguration::EINVOICE_CHECK_USER_AGE, null, null, $id_shop)) {
                 $minimum = (int) Configuration::get(ConfigurationDataConfiguration::EINVOICE_MINIMUM_USER_AGE, null, null, $id_shop);

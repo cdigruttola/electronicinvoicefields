@@ -297,8 +297,10 @@ class Electronicinvoicefields extends Module
         }
         $switch = 'radio';
 
-        foreach ($params['fields'][0]['form']['input'] as $key => $value) {
+        $key = null;
+        foreach ($params['fields'][0]['form']['input'] as $i => $value) {
             if ($value['name'] == 'vat_number') {
+                $key = $i;
                 break;
             }
         }
@@ -312,8 +314,13 @@ class Electronicinvoicefields extends Module
             $choices[$customerType['name']] = $customerType['id_addresscustomertype'];
         }
 
-        $part1 = array_slice($params['fields'][0]['form']['input'], 0, $key + 1);
-        $part2 = array_slice($params['fields'][0]['form']['input'], $key + 1);
+        if ($key === null) {
+            $part1 = $params['fields'][0]['form']['input'];
+            $part2 = [];
+        } else {
+            $part1 = array_slice($params['fields'][0]['form']['input'], 0, $key + 1);
+            $part2 = array_slice($params['fields'][0]['form']['input'], $key + 1);
+        }
 
         $fields = [
             [
@@ -363,7 +370,7 @@ class Electronicinvoicefields extends Module
     {
         $is_valid = true;
         $form = $params['form'];
-
+        $id_shop = $this->context->shop->id;
         $id_country = $form->getField('id_country')->getValue();
         $iso_country = Country::getIsoById($id_country);
         if ($iso_country === 'IT') {
@@ -386,7 +393,6 @@ class Electronicinvoicefields extends Module
             }
 
             $dni = $form->getField('dni');
-            $id_shop = $this->context->shop->id;
             if (isset($dni) && Configuration::get(ConfigurationDataConfiguration::EINVOICE_DNI_VALIDATE, null, null, $id_shop)) {
                 $dni_value = $dni->getValue();
                 if (!empty($dni_value) && !Validate::checkDNICode($dni_value, Configuration::get(ConfigurationDataConfiguration::EINVOICE_DNI_VALIDATE_MIOCODICEFISCALE_API, null, null, $id_shop))) {
@@ -513,13 +519,13 @@ class Electronicinvoicefields extends Module
         ];
 
         foreach ($datas as $id_address => $data) {
-            $id_addresscustomertype = isset($data['id_addresscustomertype']) ? trim((int) $data['id_addresscustomertype']) : 0;
+            $id_addresscustomertype = isset($data['id_addresscustomertype']) ? (int) trim($data['id_addresscustomertype']) : 0;
             $sdi = isset($data['sdi']) ? trim((string) $data['sdi']) : '';
             $pec = isset($data['pec']) ? trim((string) $data['pec']) : '';
 
             if (empty($sdi)) {
                 $address = new Address((int) $id_address);
-                if (isset($address) && $address->id) {
+                if ($address->id) {
                     $country = new Country((int) $address->id_country);
                     if ($country->iso_code !== 'IT') {
                         if (!empty($address->company) || !empty($address->vat_number)) {
@@ -574,8 +580,8 @@ class Electronicinvoicefields extends Module
         $pec = (string) Tools::getValue('pec');
 
         $params['object']->id_addresscustomertype = $id_addresscustomertype;
-        $params['object']->sdi = (string) $sdi;
-        $params['object']->pec = (string) $pec;
+        $params['object']->sdi = $sdi;
+        $params['object']->pec = $pec;
 
         $this->setAddressParams($params);
     }

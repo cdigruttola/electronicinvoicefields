@@ -38,6 +38,6 @@ class Order extends OrderCore
     {
         $invoice_address = new Address((int) $this->id_address_invoice);
 
-        return (bool) $invoice_address->needInvoice();
+        return $invoice_address->needInvoice();
     }
 }

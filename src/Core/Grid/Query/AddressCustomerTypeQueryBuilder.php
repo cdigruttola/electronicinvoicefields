@@ -57,7 +57,6 @@ final class AddressCustomerTypeQueryBuilder extends AbstractDoctrineQueryBuilder
      * @param string $dbPrefix
      * @param DoctrineSearchCriteriaApplicatorInterface $criteriaApplicator
      * @param int $contextLangId
-     * @param int[] $contextShopIds
      */
     public function __construct(
         Connection $connection,
