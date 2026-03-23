@@ -33,7 +33,7 @@ if (!defined('_PS_VERSION_')) {
 class Validate extends ValidateCore
 {
     const VIES_URL = 'https://ec.europa.eu/taxation_customs/vies/rest-api/ms/%iso%/vat/%vat%';
-    const MIOCODICEFISCALE_URL = 'http://api.miocodicefiscale.com/reverse?cf=%dni%&access_token=%api%';
+    const MIOCODICEFISCALE_URL = 'http://api.miocodicefiscale.it/reverse?cf=%dni%&access_token=%api%';
     const VIES_COUNTRY = ['AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'EL', 'ES', 'FI', 'FR', 'HR', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PL', 'PT', 'RO', 'SE', 'SI', 'SK', 'XI'];
 
     /**
